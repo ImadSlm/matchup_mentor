@@ -4,6 +4,8 @@
 
 Une application web moderne qui utilise l'intelligence artificielle pour analyser les matchups entre champions dans League of Legends.
 
+SOON : Analyse champion vs composition adverse
+
 ## ✨ Fonctionnalités
 
 - 🔍 **Recherche de champions** avec barre de recherche interactive

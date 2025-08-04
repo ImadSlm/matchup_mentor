@@ -11,7 +11,7 @@ export default function Loader() {
             🧠 Analyse en cours...
           </h3>
           <p className="text-blue-200 text-sm">
-            Notre IA étudie le matchup pour vous
+            Le Mentor étudie le matchup
           </p>
         </div>
       </div>

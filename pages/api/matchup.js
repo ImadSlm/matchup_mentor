@@ -29,7 +29,7 @@ Ce matchup demande patience et discipline. ${champ2} a un avantage naturel en ph
 
 Explique de manière concise le matchup entre ${champ1} et ${champ2} sur le patch ${patch}.
 
-Commence par un TL;DR clair avec des bullet points pratiques (5 max), puis donne une explication détaillée en dessous. Ne dépasse pas 300 mots. Utilise un ton accessible et stratégique.`
+Commence par un résumé clair avec des bullet points pratiques (5 max), puis donne une explication détaillée en dessous. Ne dépasse pas 300 mots. Utilise un ton accessible et stratégique.`
 
     // Essayer avec différents modèles
     let result
