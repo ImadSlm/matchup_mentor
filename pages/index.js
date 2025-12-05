@@ -61,7 +61,7 @@ export default function Home() {
         {/* Section de sélection des champions */}
         <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 shadow-2xl p-8 mb-8">
           <h2 className="text-2xl font-semibold text-white mb-6 text-center">
-            🎯 Sélectionnez vos champions
+            Sélectionnez vos champions
           </h2>
 
           <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
@@ -106,7 +106,7 @@ export default function Home() {
                 </span>
               ) : (
                 <span className="flex items-center gap-2">
-                  🔍 Analyser le matchup
+                  Analyser le matchup
                 </span>
               )}
             </button>
