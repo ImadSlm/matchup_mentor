@@ -1,14 +1,15 @@
-import { GoogleGenerativeAI } from "@google/generative-ai"
+import Anthropic from "@anthropic-ai/sdk"
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
-const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" })
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+})
 
 export default async function handler(req, res) {
   const { champ1, champ2, patch } = req.body
 
-  // Mode simulation temporaire (remplacez par l'appel Gemini une fois la clé configurée)
+  // Mode simulation temporaire (remplacez par l'appel Anthropic une fois la clé configurée)
   // Active la simulation si pas de clé API ou si forcé
-  const useSimulation = !process.env.GEMINI_API_KEY || false
+  const useSimulation = !process.env.ANTHROPIC_API_KEY || false
   if (useSimulation) {
     // Mode simulation activé automatiquement
 
@@ -80,24 +81,23 @@ Explique de manière concise le matchup entre ${champ1} et ${champ2} sur le patc
 
 Commence par un résumé clair avec des bullet points pratiques (5 max), puis donne une explication détaillée en dessous. Ne dépasse pas 300 mots. Utilise un ton accessible et stratégique.`
 
-    // Essayer avec différents modèles
-    let result
-    try {
-      result = await model.generateContent(prompt)
-    } catch (modelError) {
-      console.log("Erreur avec gemini-1.5-flash, tentative avec gemini-1.5-pro")
-      const fallbackModel = genAI.getGenerativeModel({
-        model: "gemini-1.5-pro",
-      })
-      result = await fallbackModel.generateContent(prompt)
-    }
+    const message = await anthropic.messages.create({
+      model: "claude-3-5-sonnet-20241022",
+      max_tokens: 1024,
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+        },
+      ],
+    })
 
-    const response = await result.response
-    const text = response.text()
+    const text =
+      message.content[0].type === "text" ? message.content[0].text : ""
 
     res.status(200).json({ result: text })
   } catch (err) {
-    console.error("Erreur Gemini:", err)
+    console.error("Erreur Anthropic:", err)
 
     // Fallback vers simulation en cas d'erreur
     const simulatedResponse = `**TL;DR - ${champ1} vs ${champ2} (Patch ${patch})**
