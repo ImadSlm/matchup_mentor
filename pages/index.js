@@ -3,6 +3,7 @@ import axios from "axios"
 import ChampionSelect from "../components/ChampionSelect"
 import ResultDisplay from "../components/ResultDisplay"
 import Loader from "../components/Loader"
+import TeamMatchupAnalyzer from "../components/TeamMatchupAnalyzer"
 
 export default function Home() {
   const [champions, setChampions] = useState([])
@@ -11,6 +12,7 @@ export default function Home() {
   const [champ2, setChamp2] = useState("")
   const [result, setResult] = useState("")
   const [loading, setLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState("1v1")
 
   useEffect(() => {
     const fetchChamps = async () => {
@@ -58,66 +60,98 @@ export default function Home() {
 
       {/* Container principal */}
       <div className="max-w-4xl mx-auto px-6 py-12">
-        {/* Section de sélection des champions */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 shadow-2xl p-8 mb-8">
-          <h2 className="text-2xl font-semibold text-white mb-6 text-center">
-            Sélectionnez vos champions
-          </h2>
+        {/* Onglets de navigation */}
+        <div className="flex gap-2 mb-8 border-b border-white/20">
+          <button
+            onClick={() => setActiveTab("1v1")}
+            className={`px-6 py-3 font-semibold transition-all ${
+              activeTab === "1v1"
+                ? "text-blue-400 border-b-2 border-blue-400"
+                : "text-slate-300 hover:text-white"
+            }`}>
+            1v1 Matchup
+          </button>
+          <button
+            onClick={() => setActiveTab("team")}
+            className={`px-6 py-3 font-semibold transition-all ${
+              activeTab === "team"
+                ? "text-purple-400 border-b-2 border-purple-400"
+                : "text-slate-300 hover:text-white"
+            }`}>
+            Équipe Complète
+          </button>
+        </div>
 
-          <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
-            <div className="flex-1 w-full">
-              <ChampionSelect
-                champions={champions}
-                value={champ1}
-                onChange={setChamp1}
-                label="Votre Champion"
-                patch={patch}
-              />
-            </div>
+        {/* Contenu onglet 1v1 */}
+        {activeTab === "1v1" && (
+          <>
+            {/* Section de sélection des champions */}
+            <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 backdrop-blur-lg rounded-2xl border border-white/20 shadow-2xl p-8 mb-8">
+              <h2 className="text-2xl font-semibold text-white mb-6 text-center">
+                Sélectionnez vos champions
+              </h2>
 
-            {/* VS indicator au centre */}
-            <div className="flex items-center justify-center md:mt-8">
-              <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-full font-bold text-xl shadow-lg animate-pulse">
-                VS
+              <div className="flex flex-col md:flex-row items-center gap-6 mb-8">
+                <div className="flex-1 w-full">
+                  <ChampionSelect
+                    champions={champions}
+                    value={champ1}
+                    onChange={setChamp1}
+                    label="Votre Champion"
+                    patch={patch}
+                  />
+                </div>
+
+                {/* VS indicator au centre */}
+                <div className="flex items-center justify-center md:mt-8">
+                  <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-full font-bold text-xl shadow-lg animate-pulse">
+                    VS
+                  </div>
+                </div>
+
+                <div className="flex-1 w-full">
+                  <ChampionSelect
+                    champions={champions}
+                    value={champ2}
+                    onChange={setChamp2}
+                    label="Champion Adverse"
+                    patch={patch}
+                  />
+                </div>
+              </div>
+
+              {/* Bouton d'analyse */}
+              <div className="text-center">
+                <button
+                  onClick={handleSubmit}
+                  disabled={!champ1 || !champ2 || loading}
+                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-4 px-8 rounded-xl transform transition-all duration-200 hover:scale-105 disabled:scale-100 disabled:opacity-50 shadow-lg">
+                  {loading ? (
+                    <span className="flex items-center gap-3">
+                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      Analyse en cours...
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-2">
+                      Analyser le matchup
+                    </span>
+                  )}
+                </button>
               </div>
             </div>
 
-            <div className="flex-1 w-full">
-              <ChampionSelect
-                champions={champions}
-                value={champ2}
-                onChange={setChamp2}
-                label="Champion Adverse"
-                patch={patch}
-              />
-            </div>
-          </div>
+            {/* Résultats */}
+            {loading ? (
+              <Loader />
+            ) : (
+              <ResultDisplay champ1={champ1} champ2={champ2} result={result} />
+            )}
+          </>
+        )}
 
-          {/* Bouton d'analyse */}
-          <div className="text-center">
-            <button
-              onClick={handleSubmit}
-              disabled={!champ1 || !champ2 || loading}
-              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-4 px-8 rounded-xl transform transition-all duration-200 hover:scale-105 disabled:scale-100 disabled:opacity-50 shadow-lg">
-              {loading ? (
-                <span className="flex items-center gap-3">
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  Analyse en cours...
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  Analyser le matchup
-                </span>
-              )}
-            </button>
-          </div>
-        </div>
-
-        {/* Résultats */}
-        {loading ? (
-          <Loader />
-        ) : (
-          <ResultDisplay champ1={champ1} champ2={champ2} result={result} />
+        {/* Contenu onglet équipe */}
+        {activeTab === "team" && (
+          <TeamMatchupAnalyzer patch={patch} champions={champions} />
         )}
       </div>
     </div>

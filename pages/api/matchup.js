@@ -66,7 +66,7 @@ Ce matchup demande une approche stratégique adaptée. ${champ2} présente des d
 
 La clé du succès réside dans la patience et l'exécution. Chaque décision compte dans ce matchup !
 
-*⚡ Analyse générée en mode démonstration - Connectez une clé API Gemini pour des analyses personnalisées*`
+*⚡ Analyse générée en mode démonstration - Connectez une clé API Anthropic pour des analyses personnalisées*`
     }
 
     const simulatedResponse = generateSimulatedResponse(champ1, champ2, patch)
@@ -82,7 +82,7 @@ Explique de manière concise le matchup entre ${champ1} et ${champ2} sur le patc
 Commence par un résumé clair avec des bullet points pratiques (5 max), puis donne une explication détaillée en dessous. Ne dépasse pas 300 mots. Utilise un ton accessible et stratégique.`
 
     const message = await anthropic.messages.create({
-      model: "claude-3-5-sonnet-20241022",
+      model: "claude-opus-4-1",
       max_tokens: 1024,
       messages: [
         {
