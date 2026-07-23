@@ -57,8 +57,8 @@ export default function TeamMatchupAnalyzer({
   const teamRoles = ["Top", "Jungle", "Mid", "ADC", "Support"]
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl p-6 shadow-xl border border-slate-700">
-      <h2 className="text-2xl font-bold text-amber-400 mb-6">
+    <div className="bg-surface rounded-xl border border-border p-8">
+      <h2 className="text-lg font-semibold text-ink mb-6 text-center">
         Analyse Équipe Complète
       </h2>
 
@@ -74,7 +74,7 @@ export default function TeamMatchupAnalyzer({
 
         {/* Équipe adverse */}
         <div>
-          <label className="block font-bold text-white mb-3">
+          <label className="block font-semibold text-sm text-ink mb-3">
             Équipe Adverse
           </label>
           <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
@@ -93,7 +93,7 @@ export default function TeamMatchupAnalyzer({
 
         {/* Messages d'erreur */}
         {error && (
-          <div className="p-3 bg-red-900/50 border border-red-600 rounded-lg text-red-200 text-sm">
+          <div className="p-3 bg-danger/10 border border-danger/30 rounded-lg text-danger text-sm">
             {error}
           </div>
         )}
@@ -101,14 +101,16 @@ export default function TeamMatchupAnalyzer({
         {/* Bouton d'analyse */}
         <button
           type="submit"
-          disabled={loading}
-          className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-3 rounded-lg transition transform hover:scale-105 disabled:hover:scale-100">
+          disabled={loading || !myChamp || enemyTeam.some((champ) => !champ)}
+          className="w-full bg-accent-strong hover:bg-accent disabled:bg-surface-2 disabled:text-ink-muted text-accent-ink font-semibold py-3 rounded-lg transition-colors duration-200 disabled:cursor-not-allowed">
           {loading ? "Analyse en cours..." : "Analyser l'Équipe"}
         </button>
       </form>
 
       {loading && <Loader />}
-      {result && <ResultDisplay result={result} />}
+      {result && (
+        <ResultDisplay champ1={myChamp} champ2="Équipe adverse" result={result} />
+      )}
     </div>
   )
 }

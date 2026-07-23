@@ -83,8 +83,8 @@ export default async function handler(req, res) {
 
 Je joue ${myChamp} et je suis face à une équipe composée de: ${enemyTeamStr} (Patch ${patch}).
 
-Fournis une analyse stratégique complète:
-1. Un tableau rapide avec la difficulté de chaque matchup
+Fournis une analyse stratégique complète, structurée avec des titres ## et des listes à puces (pas de tableau markdown):
+1. La difficulté de chaque matchup, en liste à puces (une puce par champion adverse)
 2. Les points forts et faibles de l'équipe adverse
 3. Les synergies dangereuses à éviter
 4. Une stratégie générale pour gagner les teamfights

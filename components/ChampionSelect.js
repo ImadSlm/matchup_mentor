@@ -52,6 +52,22 @@ export default function ChampionSelect({
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
 
+  // Fermer le dropdown avec Echap et rendre le focus au bouton
+  useEffect(() => {
+    if (!isOpen) return
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setIsOpen(false)
+        setSearchTerm("")
+        buttonRef.current?.focus()
+      }
+    }
+
+    document.addEventListener("keydown", handleKeyDown)
+    return () => document.removeEventListener("keydown", handleKeyDown)
+  }, [isOpen])
+
   const handleSelect = (champion) => {
     onChange(champion)
     setIsOpen(false)
@@ -90,14 +106,14 @@ export default function ChampionSelect({
 
   return (
     <div className="relative" ref={containerRef}>
-      <label className="block text-white font-bold mb-3">{label}</label>
+      <label className="block text-ink font-semibold text-sm mb-2">{label}</label>
 
       {/* Bouton principal du dropdown */}
       <button
         ref={buttonRef}
         type="button"
         onClick={handleToggle}
-        className="w-full p-4 bg-white/10 backdrop-blur-md border border-white/20 rounded-xl text-white text-left hover:bg-white/15 transition-all duration-200 flex items-center justify-between group">
+        className="w-full p-3 bg-surface-2 border border-border rounded-lg text-ink text-left hover:border-ink-muted transition-colors duration-150 flex items-center justify-between focus:outline-none focus-visible:ring-2 focus-visible:ring-accent">
         {value ? (
           /* Aperçu du champion dans le bouton */
           <div className="flex items-center gap-3">
@@ -107,23 +123,23 @@ export default function ChampionSelect({
                 ""
               )}.png`}
               alt={value}
-              className="w-10 h-10 rounded-lg shadow-md"
+              className="w-10 h-10 rounded-md"
               onError={(e) => {
                 e.target.style.display = "none"
               }}
             />
             <div>
-              <div className="text-white font-semibold">{value}</div>
-              <div className="text-blue-300 text-sm">Champion sélectionné</div>
+              <div className="text-ink font-medium">{value}</div>
+              <div className="text-ink-muted text-xs">Champion sélectionné</div>
             </div>
           </div>
         ) : (
           /* Placeholder quand aucun champion n'est sélectionné */
-          <span className="text-gray-300">Sélectionnez un champion</span>
+          <span className="text-ink-muted">Sélectionnez un champion</span>
         )}
 
         <svg
-          className={`w-5 h-5 text-gray-300 transition-transform duration-200 ${
+          className={`w-5 h-5 text-ink-muted transition-transform duration-150 ${
             isOpen ? "rotate-180" : ""
           }`}
           fill="none"
@@ -144,7 +160,7 @@ export default function ChampionSelect({
         createPortal(
           <div
             ref={dropdownRef}
-            className="fixed bg-gray-800/95 backdrop-blur-lg border border-white/20 rounded-xl shadow-2xl max-h-80 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150"
+            className="fixed bg-surface-2 border border-border rounded-lg shadow-lg max-h-80 overflow-hidden"
             style={{
               top: dropdownPosition.top,
               left: dropdownPosition.left,
@@ -152,10 +168,10 @@ export default function ChampionSelect({
               zIndex: 10000,
             }}>
             {/* Barre de recherche */}
-            <div className="p-3 border-b border-white/10">
+            <div className="p-3 border-b border-border">
               <div className="relative">
                 <svg
-                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400"
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-ink-muted"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24">
@@ -172,20 +188,20 @@ export default function ChampionSelect({
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
                   placeholder="Rechercher un champion..."
-                  className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 bg-bg border border-border rounded-md text-ink placeholder-ink-muted focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
                 />
               </div>
             </div>
 
             {/* Liste des champions */}
-            <div className="max-h-60 overflow-y-auto scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+            <div className="max-h-60 overflow-y-auto">
               {filteredChampions.length > 0 ? (
                 filteredChampions.map((champion) => (
                   <button
                     key={champion}
                     type="button"
                     onClick={() => handleSelect(champion)}
-                    className="w-full p-3 text-left hover:bg-white/10 transition-colors duration-150 flex items-center gap-3 text-white border-b border-white/5 last:border-b-0">
+                    className="w-full p-3 text-left hover:bg-surface transition-colors duration-150 flex items-center gap-3 text-ink border-b border-border last:border-b-0">
                     <img
                       src={`https://ddragon.leagueoflegends.com/cdn/${patch}/img/champion/${champion.replace(
                         /\s/g,
@@ -201,7 +217,7 @@ export default function ChampionSelect({
                   </button>
                 ))
               ) : (
-                <div className="p-4 text-center text-gray-400">
+                <div className="p-4 text-center text-ink-muted">
                   Aucun champion trouvé pour "{searchTerm}"
                 </div>
               )}

@@ -37,23 +37,37 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-indigo-900">
-      {/* Header avec effet glass */}
-      <div className="bg-black/20 backdrop-blur-md border-b border-white/10">
+    <div className="min-h-screen bg-bg">
+      <div className="border-b border-border relative">
+        <a
+          href="https://github.com/Imadslm"
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="GitHub"
+          className="absolute top-4 right-6 text-ink-muted hover:text-ink transition-colors">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-6 h-6">
+            <path d="M12 .5C5.73.5.5 5.73.5 12c0 5.09 3.29 9.4 7.86 10.93.57.1.79-.25.79-.55 0-.27-.01-1.16-.02-2.11-3.2.7-3.88-1.36-3.88-1.36-.52-1.33-1.28-1.69-1.28-1.69-1.04-.71.08-.7.08-.7 1.15.08 1.76 1.18 1.76 1.18 1.03 1.76 2.7 1.25 3.36.96.1-.75.4-1.25.73-1.54-2.55-.29-5.24-1.28-5.24-5.68 0-1.26.45-2.28 1.18-3.09-.12-.29-.51-1.46.11-3.04 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.58.23 2.75.11 3.04.74.81 1.18 1.83 1.18 3.09 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.06.78 2.14 0 1.55-.01 2.79-.01 3.17 0 .31.21.66.79.55A11.51 11.51 0 0 0 23.5 12C23.5 5.73 18.27.5 12 .5Z" />
+          </svg>
+        </a>
         <div className="max-w-4xl mx-auto px-6 py-8">
           <div className="text-center">
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent mb-2">
-              ⚔️ Matchup Mentor
+            <h1 className="text-3xl font-bold text-ink mb-2">
+              Matchup Mentor
             </h1>
-            <p className="text-blue-200 text-lg">
-              Analysez vos matchups en amont et dominez votre lane !
+            <p className="text-ink-muted text-base">
+              Analysez vos matchups en amont et dominez votre lane
             </p>
-            <div className="mt-4 inline-flex items-center gap-2 bg-green-500/20 border border-green-400/30 rounded-full px-4 py-2">
-              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-              <span className="text-green-300 text-sm font-medium">
-                Patch {patch}
-              </span>
-            </div>
+            {patch && (
+              <div className="mt-4 inline-flex items-center gap-2 bg-surface border border-border rounded-full px-3 py-1 border-blue-400 text-blue-400">
+                <span className="text-ink-muted text-xs font-medium">
+                  Patch {patch}
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -61,22 +75,22 @@ export default function Home() {
       {/* Container principal */}
       <div className="max-w-4xl mx-auto px-6 py-12">
         {/* Onglets de navigation */}
-        <div className="flex gap-2 mb-8 border-b border-white/20">
+        <div className="flex gap-2 mb-8 border-b border-border">
           <button
             onClick={() => setActiveTab("1v1")}
-            className={`px-6 py-3 font-semibold transition-all ${
+            className={`px-5 py-3 text-sm font-semibold transition-colors ${
               activeTab === "1v1"
-                ? "text-blue-400 border-b-2 border-blue-400"
-                : "text-slate-300 hover:text-white"
+                ? "text-accent border-b-2 border-accent"
+                : "text-ink-muted hover:text-ink"
             }`}>
             1v1 Matchup
           </button>
           <button
             onClick={() => setActiveTab("team")}
-            className={`px-6 py-3 font-semibold transition-all ${
+            className={`px-5 py-3 text-sm font-semibold transition-colors ${
               activeTab === "team"
-                ? "text-purple-400 border-b-2 border-purple-400"
-                : "text-slate-300 hover:text-white"
+                ? "text-accent border-b-2 border-accent"
+                : "text-ink-muted hover:text-ink"
             }`}>
             Équipe Complète
           </button>
@@ -86,8 +100,8 @@ export default function Home() {
         {activeTab === "1v1" && (
           <>
             {/* Section de sélection des champions */}
-            <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 backdrop-blur-lg rounded-2xl border border-white/20 shadow-2xl p-8 mb-8">
-              <h2 className="text-2xl font-semibold text-white mb-6 text-center">
+            <div className="bg-surface rounded-xl border border-border p-8 mb-8">
+              <h2 className="text-lg font-semibold text-ink mb-6 text-center">
                 Sélectionnez vos champions
               </h2>
 
@@ -103,10 +117,10 @@ export default function Home() {
                 </div>
 
                 {/* VS indicator au centre */}
-                <div className="flex items-center justify-center md:mt-8">
-                  <div className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-full font-bold text-xl shadow-lg animate-pulse">
+                <div className="flex items-center justify-center md:mt-7">
+                  <span className="text-ink-muted text-sm font-semibold">
                     VS
-                  </div>
+                  </span>
                 </div>
 
                 <div className="flex-1 w-full">
@@ -125,16 +139,14 @@ export default function Home() {
                 <button
                   onClick={handleSubmit}
                   disabled={!champ1 || !champ2 || loading}
-                  className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-bold py-4 px-8 rounded-xl transform transition-all duration-200 hover:scale-105 disabled:scale-100 disabled:opacity-50 shadow-lg">
+                  className="bg-accent-strong hover:bg-accent disabled:bg-surface-2 disabled:text-ink-muted text-accent-ink font-semibold py-3 px-8 rounded-lg transition-colors duration-200 disabled:cursor-not-allowed">
                   {loading ? (
                     <span className="flex items-center gap-3">
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                      <div className="w-4 h-4 border-2 border-accent-ink/30 border-t-accent-ink rounded-full animate-spin"></div>
                       Analyse en cours...
                     </span>
                   ) : (
-                    <span className="flex items-center gap-2">
-                      Analyser le matchup
-                    </span>
+                    "Analyser le matchup"
                   )}
                 </button>
               </div>
@@ -154,6 +166,15 @@ export default function Home() {
           <TeamMatchupAnalyzer patch={patch} champions={champions} />
         )}
       </div>
+
+      {/* Footer */}
+      <footer className="border-t border-border h-12 flex items-center">
+        <div className="max-w-4xl mx-auto px-6 w-full">
+          <p className="text-center text-ink-muted text-sm">
+            Imadslm - {new Date().getFullYear()} - Matchup Mentor.
+          </p>
+        </div>
+      </footer>
     </div>
   )
 }

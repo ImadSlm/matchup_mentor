@@ -1,128 +1,129 @@
+// Une ligne compte comme titre de section seulement si c'est un vrai heading
+// markdown (## / ###) ou une ligne entièrement en gras (**Titre**), jamais une
+// simple phrase qui contient du gras au milieu (sinon chaque puce devient sa
+// propre section).
+const stripOrdinal = (s) => s.replace(/^\d+[.)]\s*/, '')
+
+const parseHeading = (line) => {
+  const heading = line.match(/^#{1,4}\s*(.+)/)
+  if (heading) return stripOrdinal(heading[1].replace(/\*\*/g, '')).trim()
+
+  const boldOnly = stripOrdinal(line).match(/^\*\*(.+?)\*\*:?$/)
+  if (boldOnly) return boldOnly[1].replace(/:$/, '').trim()
+
+  return null
+}
+
+// Ligne de séparation de tableau markdown ("|---|---|"), pure décoration à ignorer.
+const isTableRule = (line) => /^\|?[-:\s|]+\|?$/.test(line) && line.includes('-')
+
+// Ligne de tableau ("| a | b |") : les modèles en génèrent parfois malgré le
+// prompt. Faute de rendu de tableau, on l'aplatit en une puce lisible.
+const flattenTableRow = (line) =>
+  line
+    .replace(/^\||\|$/g, '')
+    .split('|')
+    .map((cell) => cell.trim())
+    .filter(Boolean)
+    .join(' — ')
+
+const parseAnalysis = (text) => {
+  const lines = text
+    .split('\n')
+    .map((l) => l.trim())
+    .filter((l) => l.length > 0 && !isTableRule(l))
+  const sections = []
+  let current = null
+
+  lines.forEach((rawLine) => {
+    const line =
+      rawLine.startsWith('|') && rawLine.endsWith('|')
+        ? flattenTableRow(rawLine)
+        : rawLine
+
+    const heading = parseHeading(line)
+    if (heading) {
+      if (current) sections.push(current)
+      current = { title: heading, content: [] }
+    } else if (current) {
+      current.content.push(line)
+    } else {
+      current = { title: 'Analyse Générale', content: [line] }
+    }
+  })
+
+  if (current) sections.push(current)
+
+  return sections.length > 0 ? sections : [{ title: 'Analyse', content: lines }]
+}
+
+// Rendu minimal du gras inline (**texte**) sans injecter du HTML brut.
+const renderInline = (text) => {
+  const parts = text.split(/(\*\*[^*]+\*\*)/g)
+  return parts.map((part, i) => {
+    const bold = part.match(/^\*\*([^*]+)\*\*$/)
+    return bold ? (
+      <strong key={i} className="text-ink font-semibold">
+        {bold[1]}
+      </strong>
+    ) : (
+      part
+    )
+  })
+}
+
 export default function ResultDisplay({ champ1, champ2, result }) {
   if (!result) return null
 
-  // Fonction pour parser et structurer le contenu de l'IA
-  const parseAnalysis = (text) => {
-    const lines = text.split('\n').filter(line => line.trim() !== '')
-    const sections = []
-    let currentSection = null
-
-    lines.forEach(line => {
-      const trimmed = line.trim()
-      
-      // Détecter les titres de sections (avec des mots-clés)
-      if (trimmed.includes('**') || 
-          trimmed.toLowerCase().includes('avantage') ||
-          trimmed.toLowerCase().includes('conseil') ||
-          trimmed.toLowerCase().includes('stratégie') ||
-          trimmed.toLowerCase().includes('build') ||
-          trimmed.toLowerCase().includes('items') ||
-          trimmed.toLowerCase().includes('runes') ||
-          trimmed.toLowerCase().includes('phase') ||
-          trimmed.toLowerCase().includes('teamfight') ||
-          trimmed.toLowerCase().includes('early') ||
-          trimmed.toLowerCase().includes('late') ||
-          trimmed.toLowerCase().includes('mid game')) {
-        
-        if (currentSection) {
-          sections.push(currentSection)
-        }
-        currentSection = {
-          title: trimmed.replace(/\*\*/g, ''),
-          content: []
-        }
-      } else if (currentSection && trimmed.length > 0) {
-        currentSection.content.push(trimmed)
-      } else if (!currentSection && trimmed.length > 0) {
-        // Première ligne sans section = introduction
-        sections.push({
-          title: 'Analyse Générale',
-          content: [trimmed]
-        })
-      }
-    })
-
-    if (currentSection) {
-      sections.push(currentSection)
-    }
-
-    return sections.length > 0 ? sections : [{
-      title: 'Analyse',
-      content: lines
-    }]
-  }
-
   const sections = parseAnalysis(result)
 
-  // Fonction pour obtenir l'icône selon le titre
-  const getSectionIcon = (title) => {
-    const titleLower = title.toLowerCase()
-    if (titleLower.includes('avantage') || titleLower.includes('force')) return '💪'
-    if (titleLower.includes('conseil') || titleLower.includes('tip')) return '💡'
-    if (titleLower.includes('stratégie')) return '🎯'
-    if (titleLower.includes('build') || titleLower.includes('items')) return '⚔️'
-    if (titleLower.includes('runes')) return '🔮'
-    if (titleLower.includes('early') || titleLower.includes('phase')) return '🌅'
-    if (titleLower.includes('teamfight')) return '👥'
-    if (titleLower.includes('late')) return '🌙'
-    return '📝'
-  }
-
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 animate-fadeIn">
       {/* En-tête avec les champions */}
-      <div className="bg-gradient-to-r from-purple-900/50 to-blue-900/50 backdrop-blur-lg rounded-2xl border border-white/20 shadow-2xl p-6">
+      <div className="bg-surface rounded-xl border border-border p-6">
         <div className="flex items-center justify-center gap-4 mb-4">
           <div className="text-center">
-            <div className="text-2xl font-bold text-cyan-300">{champ1}</div>
-            <div className="text-sm text-blue-200">Votre champion</div>
+            <div className="text-lg font-semibold text-ink">{champ1}</div>
+            <div className="text-xs text-ink-muted">Votre champion</div>
           </div>
-          
-          <div className="text-4xl font-bold text-red-400 mx-6 animate-pulse">
-            VS
-          </div>
-          
+
+          <div className="text-sm font-semibold text-ink-muted mx-4">VS</div>
+
           <div className="text-center">
-            <div className="text-2xl font-bold text-red-300">{champ2}</div>
-            <div className="text-sm text-blue-200">Champion adverse</div>
+            <div className="text-lg font-semibold text-ink">{champ2}</div>
+            <div className="text-xs text-ink-muted">Champion adverse</div>
           </div>
         </div>
-        
+
         <div className="text-center">
-          <div className="inline-flex items-center gap-2 bg-green-500/20 border border-green-400/30 rounded-full px-4 py-2">
-            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-            <span className="text-green-300 text-sm font-medium">
-              Analyse complétée
-            </span>
-          </div>
+          <span className="inline-block bg-surface-2 border border-border rounded-full px-3 py-1 text-ink-muted text-xs font-medium border-green-400 text-green-400">
+            Analyse complétée
+          </span>
         </div>
       </div>
 
       {/* Sections d'analyse */}
-      <div className="grid gap-4">
+      <div className="grid gap-3">
         {sections.map((section, index) => (
-          <div 
+          <div
             key={index}
-            className="bg-white/10 backdrop-blur-lg rounded-xl border border-white/20 shadow-lg p-6 hover:bg-white/15 transition-all duration-300"
+            className="bg-surface rounded-lg border border-border p-6"
           >
-            <div className="flex items-center gap-3 mb-4">
-              <span className="text-2xl">{getSectionIcon(section.title)}</span>
-              <h3 className="text-xl font-semibold text-white">
-                {section.title}
-              </h3>
-            </div>
-            
-            <div className="space-y-3">
+            <h3 className="text-base font-semibold text-ink mb-3">
+              {section.title}
+            </h3>
+
+            <div className="space-y-2">
               {section.content.map((paragraph, pIndex) => (
-                <div key={pIndex} className="text-blue-100 leading-relaxed">
+                <div key={pIndex} className="text-ink-muted leading-relaxed text-sm">
                   {/* Traiter les points de liste */}
                   {paragraph.startsWith('-') || paragraph.startsWith('•') ? (
                     <div className="flex items-start gap-2">
-                      <span className="text-cyan-400 font-bold">•</span>
-                      <span>{paragraph.replace(/^[-•]\s*/, '')}</span>
+                      <span className="text-accent">•</span>
+                      <span>{renderInline(paragraph.replace(/^[-•]\s*/, ''))}</span>
                     </div>
                   ) : (
-                    <p>{paragraph}</p>
+                    <p>{renderInline(paragraph)}</p>
                   )}
                 </div>
               ))}
@@ -132,13 +133,10 @@ export default function ResultDisplay({ champ1, champ2, result }) {
       </div>
 
       {/* Footer avec conseils */}
-      <div className="bg-gradient-to-r from-blue-800/30 to-purple-800/30 backdrop-blur-lg rounded-xl border border-white/20 p-4">
-        <div className="flex items-center gap-2 text-blue-200">
-          <span className="text-lg">💡</span>
-          <span className="text-sm">
-            Ces conseils sont générés par IA et peuvent varier selon le patch et le meta actuel.
-          </span>
-        </div>
+      <div className="border border-border rounded-lg p-4">
+        <p className="text-xs text-ink-muted">
+          Ces conseils sont générés par IA et peuvent varier selon le patch et la meta actuelle.
+        </p>
       </div>
     </div>
   )
